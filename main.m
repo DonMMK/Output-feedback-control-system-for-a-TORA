@@ -6,57 +6,87 @@ L = 1     ;    % m
 J = 0.0002175; % kg m2
 k = 186.3;     % N/m
 
-%% Matrix values
-
-alpha_a = (m * L * k )  / ( (J + m * (L^2) ) *(m+M) - (m^2)*(L^2) )
-
-beta_a = (-k * (J + m *(L*L)) ) / (  (J + m * (L^2) ) *(m+M) - (m^2)*(L^2)  )
-
-alpha_b = (-m * L * k )  / ( (J + m * (L^2) ) *(m+M) - (m^2)*(L^2) )
-
-beta_b =  (-k * (J + m *(L*L)) ) / (  (J + m * (L^2) ) *(m+M) - (m^2)*(L^2)  )
-
 
 %% Eigenvalues
 
-% When the equilibrium point is at 0
-Aa_matrix = [0 , 1 , 0 ,0 ; 
-   0 , 0 , alpha_a , 0;
+% When the equilibrium point is at 0 - Point A
+Aa = [0 , 1 , 0 ,0 ; 
+   0 , 0 , (m * L * k )  / ( (J + m * (L^2) ) *(m+M) - (m^2)*(L^2) ) , 0;
    0 ,0 ,0 ,1;
-   0 , 0, beta_a , 0;]
+   0 , 0, (-k * (J + m *(L*L)) ) / (  (J + m * (L^2) ) *(m+M) - (m^2)*(L^2)  ) , 0;]
 
-eig(Aa_matrix)
+eig(Aa)
 
 
-% When the equilibrium point is at 180
-Ab_matrix = [0 , 1 , 0, 0;
-    0 ,0 , alpha_b , 0;
+% When the equilibrium point is at 180 - Point B
+Ab = [0 , 1 , 0, 0;
+    0 ,0 , (-m * L * k )  / ( (J + m * (L^2) ) *(m+M) - (m^2)*(L^2) ) , 0;
     0 ,0 ,0 , 1;
-    0 , 0, beta_b , 0;]
+    0 , 0, (-k * (J + m *(L*L)) ) / (  (J + m * (L^2) ) *(m+M) - (m^2)*(L^2)  ) , 0;]
 
-eig(Ab_matrix)
+eig(Ab)
 
 
 %% Control design using state feedback
 
 % Equilibrium Point A
-Ba_matrix = [0;
+Ba = [0;
                (m+M/((J+(m*L^2))*(m+M)-(m^2*L^2))) ;
                0 ;
                ((-m*L)/((J+m*L^2)*(m+M)-(m^2*L^2))) ];
 
 % Equilibrium Point B
-Bb_matrix = [0;
-               Bb_2nd_row ;
+Bb = [0;
+               (m+M/((J+(m*L^2))*(m+M)-(m^2*L^2)))  ;
                0 ;
-               Bb_4th_row ];
+               ((+m*L)/((J+m*L^2)*(m+M)-(m^2*L^2))) ];
 
 
 
 % Controllability Matrix
 
-C_Aa_Ba = [ Ba_matrix , Aa_matrix * Ba_matrix ,  (Aa_matrix^2) * Ba_matrix ,  (Aa_matrix^3) * Ba_matrix] ;
-Controllablity_a = ctrb(Aa_matrix , Ba_matrix)
+C_Aa_Ba = [ Ba , Aa * Ba ,  (Aa^2) * Ba ,  (Aa^3) * Ba] ;
+Controllablity_Point_a = ctrb(Aa , Ba)
 
-C_Ab_Bb = [ Bb_matrix , Ab_matrix * Bb_matrix ,  (Ab_matrix^2) * Bb_matrix ,  (Ab_matrix^3) * Bb_matrix] ;
-Controllablity_b = ctrb(Ab_matrix , Bb_matrix)
+C_Ab_Bb = [ Bb , Ab * Bb ,  (Ab^2) * Bb ,  (Ab^3) * Bb] ;
+Controllablity_Point_b = ctrb(Ab , Bb)
+
+% Calculate the rank of the system to check if system is controllable
+Rank_at_Point_a = rank(Controllablity_Point_a)
+Rank_at_Point_b = rank(Controllablity_Point_b)
+
+if (Rank_at_Point_a & Rank_at_Point_b == 4 ) 
+    fprintf("Both eq points are full rank, therefore controllable")
+else
+    fprintf("Not full rank. The rank is: %d %d " ,Rank_at_Point_a , Rank_at_Point_b )
+end
+
+
+%% Pole Placement
+
+% Required Settling Time
+Required_Settlting_Time = 4;
+
+% Percentage Overshoot
+Percentage_Overshoot = 2;
+
+% Poles
+zeta_numerator = -log(Percentage_Overshoot/100);
+zeta_denominator = sqrt(pi^2+log(Percentage_Overshoot/100)^2);
+zeta = zeta_numerator / zeta_denominator;
+
+wn = 4/(Required_Settlting_Time*zeta);
+
+%Pole 1 and 2 
+Poles_1_2 = roots([1, 2*zeta*wn, wn^2]);
+%Pole 3 and 4 
+% The rest of the poles
+
+
+
+
+%% Additional Functions
+
+
+
+
