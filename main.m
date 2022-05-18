@@ -7,7 +7,7 @@ J = 0.0002175; % kg m2
 k = 186.3;     % N/m
 
 
-%% Eigenvalues
+%% Stability
 
 % When the equilibrium point is at 0 - Point A
 Aa = [0 , 1 , 0 ,0 ; 
@@ -15,7 +15,9 @@ Aa = [0 , 1 , 0 ,0 ;
    0 ,0 ,0 ,1;
    0 , 0, (-k * (J + m *(L*L)) ) / (  (J + m * (L^2) ) *(m+M) - (m^2)*(L^2)  ) , 0;]
 
-eig(Aa)
+EigValues_A = eig(Aa)
+
+sum(EigValues_A > 0)
 
 
 % When the equilibrium point is at 180 - Point B
@@ -24,7 +26,10 @@ Ab = [0 , 1 , 0, 0;
     0 ,0 ,0 , 1;
     0 , 0, (-k * (J + m *(L*L)) ) / (  (J + m * (L^2) ) *(m+M) - (m^2)*(L^2)  ) , 0;]
 
-eig(Ab)
+EigValues_B = eig(Ab)
+
+sum(EigValues_B > 0)
+
 
 
 %% Control design using state feedback
@@ -77,15 +82,19 @@ zeta = zeta_numerator / zeta_denominator;
 
 wn = 4/(Required_Settlting_Time*zeta);
 
+% Dominant pole near the jw axis -> slow response
+% 2 fast 2 slow???
+
+
 %Pole 1 and 2 
-Poles_1_2 = roots([1, 2*zeta*wn, wn^2]);
+Poles_1_2 = roots([1, 2*zeta*wn, wn^2]) 
 %Pole 3 and 4 
-% The rest of the poles
+% The rest of the poles ?? 
 
 
 
 
-%% Additional Functions
+%% Observability
 
 
 
