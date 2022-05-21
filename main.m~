@@ -9,8 +9,32 @@ L = 1     ;    % m  Length of Rotating Actuator
 J = 0.0002175; % kg m2 Intertia
 k = 186.3;     % N/m Spring Constant
 
+%% Equilibrium Points
+
+% syms x1 x3
+% u = 0;
+% x2 = 0;
+% x4 = 0;
+% 
+% eq1Num = (m + M)*u - m*l*cos(x1) * (m*l*x2^2*sin(x1) - k*x3);
+% eq2Num = -m*l*u*cos(x1) + (J + m*l^2) * (m*l*x2^2*sin(x1) - k*x3);
+% delTheta = (J + m*l^2)*(m + M) - m^2*l^2*cos(x1)^2;
+% 
+% eq1 = eq1Num/delTheta;
+% eq2 = eq2Num/delTheta;
+% 
+% [x1, x3] = solve(eq1 == 0, eq2 == 0);
+% x1 = double(x1); x3 = double(x3);
+% 
+% xa_bar = [ x1(2); x2; x3(2); x4 ];
+% xb_bar = [ x1(1); x2; x3(1); x4 ];
+% 
+% clear x1 x2 x3 x4
+
 
 %% Stability
+% For non Linear systems examine stability of individual equilibrium points
+% ASK FOR CLARIFICATION: 
 
 % When the equilibrium point is at 0 - Point A
 Aa = [0 , 1 , 0 ,0 ; 
@@ -19,14 +43,15 @@ Aa = [0 , 1 , 0 ,0 ;
    0 , 0, (-k * (J + m *(L*L)) ) / (  (J + m * (L^2) ) *(m+M) - (m^2)*(L^2)  ) , 0;]
 
 EigValues_A = eig(Aa)
-Stability_A = sum(EigValues_A > 0)
-if (Stability_A < 0)
-    fprintf("This Equilibrium Point with eig value %d is Stable" , Stability_A)
-elseif (Stability_A == 0)
-   fprintf("This Equilibrium Point with eig value %d is Inconclusive" , Stability_A) 
+if (sum(EigValues_A < 0) >= 1)
+    fprintf("This Equilibrium Point with eig value %d is Stable\n" , EigValues_A)
+elseif (sum(EigValues_A == 0) >= 1)
+   fprintf("This Equilibrium Point with eig value %d is Inconclusive\n" , EigValues_A) 
 else
-   fprintf("This Equilibrium Point with eig value %d is Unstable" , Stability_A)
+   fprintf("This Equilibrium Point with eig value %d is Unstable\n" , EigValues_A)
 end
+
+% ASK FOR CLARIFICATION: is it meant to be inconclusive
 
 % When the equilibrium point is at 180 - Point B
 Ab = [0 , 1 , 0, 0;
@@ -35,13 +60,12 @@ Ab = [0 , 1 , 0, 0;
     0 , 0, (-k * (J + m *(L*L)) ) / (  (J + m * (L^2) ) *(m+M) - (m^2)*(L^2)  ) , 0;]
 
 EigValues_B = eig(Ab)
-Stability_B = sum(EigValues_B > 0)
-if (Stability_B < 0)
-    fprintf("This Equilibrium Point with eig value %d is Stable" , Stability_B)
-elseif (Stability_B == 0)
-   fprintf("This Equilibrium Point with eig value %d is Inconclusive" , Stability_B) 
+if (sum(EigValues_B < 0) >= 1)
+    fprintf("This Equilibrium Point with eig value %d is Stable\n" , EigValues_B)
+elseif (sum(EigValues_B == 0) >= 1)
+   fprintf("This Equilibrium Point with eig value %d is Inconclusive\n" , EigValues_B) 
 else
-   fprintf("This Equilibrium Point with eig value %d is Unstable" , Stability_B)
+   fprintf("This Equilibrium Point with eig value %d is Unstable\n" , EigValues_B)
 end
 
 % Equilibrium Point A
@@ -60,9 +84,34 @@ Bb = [0;
 % to be observed havent been selected yet.
 
 % The D matrix is zero for this system
+D = zeros(2,2)
+
+%% Pole Placement
+
+% Required Settling Time
+Required_Settlting_Time = 4;  % ASK FOR CLARIFICATION:
+
+% Percentage Overshoot
+Percentage_Overshoot = 2; % ASK FOR CLARIFICATION:
+
+% Poles
+zeta_numerator = -log(Percentage_Overshoot/100);
+zeta_denominator = sqrt(pi^2+log(Percentage_Overshoot/100)^2);
+zeta = zeta_numerator / zeta_denominator;
+
+wn = 4/(Required_Settlting_Time*zeta);
+
+% Dominant pole near the jw axis -> slow response
+% 2 fast 2 slow
+
+%Pole 1 and 2 
+Poles_1_2 = roots([1, 2*zeta*wn, wn^2]) 
+%Pole 3 and 4 
+Pole_3 = 9 * Poles_1_2(1)
+Pole_4 = 9 * Poles_1_2(2)
+
            
-           
-%% Control design using state feedback
+%% Control Design using state feedback
 % Controllability Matrix
 
 C_Aa_Ba = [ Ba , Aa * Ba ,  (Aa^2) * Ba ,  (Aa^3) * Ba] ;
@@ -87,35 +136,29 @@ else
     fprintf("Not full rank. The rank is: %d " ,Rank_at_Point_b )
 end
 
+% Only Equilibrium Point A will be considered because
+% ASK FOR CLARIFICATION:
 
-%% Pole Placement
+%% Control Design using output feedback 
 
-% Required Settling Time
-Required_Settlting_Time = 4;
+% New C and D matrices
+C = [1 , 0 , 0 , 0;
+     0 , 0 , 1 , 0]
 
-% Percentage Overshoot
-Percentage_Overshoot = 2;
+D = zeros(2,1)
 
-% Poles
-zeta_numerator = -log(Percentage_Overshoot/100);
-zeta_denominator = sqrt(pi^2+log(Percentage_Overshoot/100)^2);
-zeta = zeta_numerator / zeta_denominator;
-
-wn = 4/(Required_Settlting_Time*zeta);
-
-% Dominant pole near the jw axis -> slow response
-% 2 fast 2 slow???
+% Calculate observerbility of the matrix
+O_Aa_Ca = [C; C*Aa; C*Aa*Aa ; C*Aa * Aa* Aa]
+Observability_Point_a = obsv(Aa,C)
 
 
-%Pole 1 and 2 
-Poles_1_2 = roots([1, 2*zeta*wn, wn^2]) 
-%Pole 3 and 4 
-% The rest of the poles ?? 
+% Calculate the rank of the system to check if system is observable
+Rank2_at_Point_a = rank(Observability_Point_a)
 
 
 
 
-%% Observability
+
 
 
 
