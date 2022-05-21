@@ -94,6 +94,13 @@ Required_Settlting_Time = 4;  % ASK FOR CLARIFICATION:
 % Percentage Overshoot
 Percentage_Overshoot = 2; % ASK FOR CLARIFICATION:
 
+% Equilibrium Point for the system
+x_bar = [0 , 0 , 0 , 0]';
+
+% Starting position of the system
+ctoRadians = pi/180;
+x_0 = [5*(ctoRadians) , 0 , 0.1 0]';
+
 % Poles
 zeta_numerator = -log(Percentage_Overshoot/100);
 zeta_denominator = sqrt(pi^2+log(Percentage_Overshoot/100)^2);
@@ -109,6 +116,8 @@ Poles_1_2 = roots([1, 2*zeta*wn, wn^2])
 %Pole 3 and 4 
 Pole_3 = 9 * Poles_1_2(1)
 Pole_4 = 9 * Poles_1_2(2)
+
+
 
            
 %% Control Design using state feedback
@@ -139,6 +148,12 @@ end
 % Only Equilibrium Point A will be considered because
 % ASK FOR CLARIFICATION:
 
+Pole_P = [Poles_1_2(1) , Poles_1_2(2), Pole_3 , Pole_4 ]
+
+% Gain using matlab place
+K = place(Aa , Ba , Pole_P)
+
+
 %% Control Design using output feedback 
 
 % New C and D matrices
@@ -155,11 +170,20 @@ Observability_Point_a = obsv(Aa,C)
 % Calculate the rank of the system to check if system is observable
 Rank2_at_Point_a = rank(Observability_Point_a)
 
+if (Rank2_at_Point_a == 4 ) 
+    fprintf("Both eq points are full rank, therefore observable")
+else
+    fprintf("Not full rank. The rank is: %d " ,Rank2_at_Point_a )
+end
+
+desiredPoles = [-62 , -65 , -166 , -164];
+L_Value = place(Aa', C', desiredPoles)'; % ASK FOR CLARIFICATION:
+
+G = [x_bar(1); x_bar(3)] % ASK FOR CLARIFICATION:
 
 
+%% Other parameters to set before simulations
 
-
-
-
-
-
+stop_time = 15;
+stateEstimates = 1;
+Boolean_Controller = 

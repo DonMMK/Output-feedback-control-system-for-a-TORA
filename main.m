@@ -1,6 +1,9 @@
 %% EGH445 Modern Control TORA System %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% Reset Workspace to zero
+close all; clear all ; clc
+
 %% Parameters
 
 M = 1.3608;    % kg Mass of Translating Oscilattor
@@ -94,6 +97,13 @@ Required_Settlting_Time = 4;  % ASK FOR CLARIFICATION:
 % Percentage Overshoot
 Percentage_Overshoot = 2; % ASK FOR CLARIFICATION:
 
+% Equilibrium Point for the system
+x_bar = [0 , 0 , 0 , 0]';
+
+% Starting position of the system
+ctoRadians = pi/180;
+x0 = [5*(ctoRadians) , 0 , 0.1 0]';
+
 % Poles
 zeta_numerator = -log(Percentage_Overshoot/100);
 zeta_denominator = sqrt(pi^2+log(Percentage_Overshoot/100)^2);
@@ -109,6 +119,8 @@ Poles_1_2 = roots([1, 2*zeta*wn, wn^2])
 %Pole 3 and 4 
 Pole_3 = 9 * Poles_1_2(1)
 Pole_4 = 9 * Poles_1_2(2)
+
+
 
            
 %% Control Design using state feedback
@@ -139,6 +151,12 @@ end
 % Only Equilibrium Point A will be considered because
 % ASK FOR CLARIFICATION:
 
+Pole_P = [Poles_1_2(1) , Poles_1_2(2), Pole_3 , Pole_4 ]
+
+% Gain using matlab place
+K = place(Aa , Ba , Pole_P)
+
+
 %% Control Design using output feedback 
 
 % New C and D matrices
@@ -162,9 +180,39 @@ else
 end
 
 desiredPoles = [-62 , -65 , -166 , -164];
-L_Value = place(Aa', C', desiredPoles)'; % ASK FOR CLARIFICATION:
+L_Value = place(Aa', C', desiredPoles)'; % ASK FOR CLARIFICATION: place vs acker
 
+G = [x_bar(1); x_bar(3)] % ASK FOR CLARIFICATION:
 
 
 %% Other parameters to set before simulations
 
+stop_time = 15;
+stateEstimates = 1;
+Boolean_Controller = 1;
+
+% ODE Solver step size
+h = 0.01;
+
+%% Simulation 1:
+
+NonLinear_1 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
+Linear_1 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
+
+%% Simulation 2:
+
+Boolean_Controller = 0;
+NonLinear_2 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
+Linear_2 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
+
+
+%% Plot 1: 
+
+figure('Name','Controlled Vs Uncontrolled (Linear System)');
+%Plot 1 Control Force 
+plot(Linear_1.t,Linear_1.F,'b',Linear_2.t,Linear_2.F,'r--')
+grid on
+xlabel('Seconds')
+ylabel('Newton')
+title ('Control Force')
+legend('F Linear Controlled','F Linear Uncontrolled')
