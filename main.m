@@ -1,6 +1,10 @@
 %% EGH445 Modern Control TORA System %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Author:
+% Submission Date:
+% Ackno
+
 %% Reset Workspace to zero
 close all; clear all ; clc
 
@@ -41,9 +45,9 @@ k = 186.3;     % N/m Spring Constant
 
 % When the equilibrium point is at 0 - Point A
 Aa = [0 , 1 , 0 ,0 ; 
-   0 , 0 , (m * L * k )  / ( (J + m * (L^2) ) *(m+M) - (m^2)*(L^2) ) , 0;
+   0 , 0 , ((m*L*k)/((J+(m*L^2))*(m+M)-((m^2)*(L^2)))) , 0;
    0 ,0 ,0 ,1;
-   0 , 0, (-k * (J + m *(L*L)) ) / (  (J + m * (L^2) ) *(m+M) - (m^2)*(L^2)  ) , 0;]
+   0 , 0, ((-k*(J+(m*L^2)))/((J+(m*L^2))*(m+M)-(m^2*L^2))) , 0;]
 
 EigValues_A = eig(Aa)
 if (sum(EigValues_A < 0) >= 1)
@@ -54,7 +58,7 @@ else
    fprintf("This Equilibrium Point with eig value %d is Unstable\n" , EigValues_A)
 end
 
-% ASK FOR CLARIFICATION: is it meant to be inconclusive
+% ASK FOR CLARIFICATION: is it meant to be marginally stable
 
 % When the equilibrium point is at 180 - Point B
 Ab = [0 , 1 , 0, 0;
@@ -85,10 +89,10 @@ Bb = [0;
 
 % The C matrix has not been evaluated conclusively as the states that are
 % to be observed havent been selected yet.
-C = eye(4)
+% C = eye(4)
 
 % The D matrix is zero for this system
-D = zeros(2,2)
+% D = zeros(2,2)
 
 %% Pole Placement
 
@@ -103,7 +107,7 @@ x_bar = [0 , 0 , 0 , 0]';
 
 % Starting position of the system
 ctoRadians = pi/180;
-x0 = [20*(ctoRadians) , 0 , 0.1 0]';
+x0 = [10*(ctoRadians) , 0 , 0.1 0]';
 
 % Poles
 zeta_numerator = -log(Percentage_Overshoot/100);
@@ -180,7 +184,7 @@ else
     fprintf("Not full rank. The rank is: %d " ,Rank2_at_Point_a )
 end
 
-desiredPoles = [-60 , -60 , -160 , -160];
+desiredPoles = [-65 , -65 , -165 , -165];
 L_Value = place(Aa', C', desiredPoles)'; % ASK FOR CLARIFICATION: place vs acker
 
 Observer_In = [x_bar(1); x_bar(3)] % ASK FOR CLARIFICATION:
@@ -197,8 +201,8 @@ h = 0.01;
 
 %% Simulation 1: Standard Simulation
 
-NonLinear_1 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
-Linear_1 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
+%NL = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
+%Lin = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
 
 %% Simulation 2: Simulation without the controller
 
@@ -206,45 +210,102 @@ Boolean_Flag_for_Controller = 0;
 NonLinear_2 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
 Linear_2 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
 
-%% Simulation 3: Starting Conditions varied to test controller
+%% Simulation 3: Starting Conditions varied to test controller capabilities
 
-x0 = [10*pi/180 0 -0.3 0]';
-Boolean_Flag_for_Controller = 0;
-NonLinear_3 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
-Linear_3 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
+x0 = [10*pi/180 0 -1 0]';
+Boolean_Flag_for_Controller = 1;
+NL = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
+Lin = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
 
-%% Plot 1: 
+% %% Plot 1: 
+% 
+% figure('Name','Controlled Vs Uncontrolled (Linear System)');
+% %Plot 1 Control Force 
+% plot(Linear_1.t,Linear_1.F,'b',Linear_2.t,Linear_2.F,'r--')
+% grid on
+% xlabel('Seconds')
+% ylabel('Newton')
+% title ('Control Force')
+% legend('F Linear Controlled','F Linear Uncontrolled')
 
-figure('Name','Controlled Vs Uncontrolled (Linear System)');
+% %% Plot 2: 
+% 
+% figure('Name','Controlled Vs Extreme (Linear System)');
+% %Plot 1 Control Force 
+% plot(Linear_1.t,Linear_1.F,'b',Linear_3.t,Linear_3.F,'r--')
+% grid on
+% xlabel('Seconds')
+% ylabel('Newton')
+% title ('Control Force')
+% legend('F Linear Controlled','F Linear extreme')
+
+% %% Plot 3: 
+% 
+% figure('Name','Linear Vs Non Linear ');
+% %Plot 1 Control Force 
+% plot(Linear_1.t,Linear_1.x(:,2),'b',NonLinear_1.t,NonLinear_1.x(:,2),'r--')
+% grid on
+% xlabel('Seconds')
+% ylabel('Newton')
+% title ('X value')
+% legend('Linear','NonLinear ')
+
+%% 
+r2d = [180/pi,1];
+figure('Name','OBSERVER AND OUTPUT-FEEDBACKCONTROLLER');
 %Plot 1 Control Force 
-plot(Linear_1.t,Linear_1.F,'b',Linear_2.t,Linear_2.F,'r--')
+subplot(3,2,1:2)
+
+plot(NL.t,NL.F,'b',Lin.t,Lin.F,'r--')
 grid on
 xlabel('Seconds')
 ylabel('Newton')
-title ('Control Force')
-legend('F Linear Controlled','F Linear Uncontrolled')
+title ('Force')
+legend('F Non-linear','F Linear')
 
-%% Plot 2: 
-
-figure('Name','Controlled Vs Extreme (Linear System)');
-%Plot 1 Control Force 
-plot(Linear_1.t,Linear_1.F,'b',Linear_3.t,Linear_3.F,'r--')
+%Plot 2 x1
+subplot(3,2,3)
+plot(Lin.t,r2d(1)*Lin.x(:,1),'r', ...
+    Lin.t,r2d(1)*Lin.x_hat(:,1),'k--',...
+    NL.t,r2d(1)*NL.x(:,1),'b',...
+    NL.t,r2d(1)*NL.x_hat(:,1),'g--')
 grid on
 xlabel('Seconds')
-ylabel('Newton')
-title ('Control Force')
-legend('F Linear Controlled','F Linear extreme')
+ylabel('Degrees')
+title ('Angle of Rotating Actuator')
+legend('x_1 Linear','x_1 hat Linear','x_1 Non Linear','x_1 hat Non Linear','location','northeast')
 
-%% Plot 4: 
 
-figure('Name','Linear Vs Non Linear ');
-%Plot 1 Control Force 
-plot(Linear_1.t,Linear_1.F,'b',NonLinear_1.t,NonLinear_1.F,'r--')
+%Plot 3 x2
+subplot(3,2,4)
+plot(Lin.t,r2d(1)*Lin.x(:,2),'r',Lin.t,r2d(1)*Lin.x_hat(:,2),'k--',NL.t,r2d(1)*NL.x(:,2),'b',NL.t,r2d(1)*NL.x_hat(:,2),'g--')
 grid on
 xlabel('Seconds')
-ylabel('Newton')
-title ('Control Force')
-legend('Linear','NonLinear ')
+ylabel('Degrees Per Second')
+title ('Velocity of Rotating Actuator')
+legend('x_2 Linear','x_2 hat Linear','x_2 Non Linear','x_2 hat Non Linear','location','northeast')
+
+
+%Plot 4 x3
+subplot(3,2,5)
+plot(Lin.t,r2d(2)*Lin.x(:,3),'r',Lin.t,r2d(2)*Lin.x_hat(:,3),'k--',NL.t,r2d(2)*NL.x(:,3),'b',NL.t,r2d(2)*NL.x_hat(:,3),'g--')
+grid on
+xlabel('Seconds')
+ylabel('Meters')
+title ('Position of Translational Oscillator')
+legend('x_3 Linear','x_3 hat Linear','x_3 Non Linear','x_3 hat Non Linear','location','northeast')
+
+%Plot 5 x4
+subplot(3,2,6)
+plot(Lin.t,r2d(2)*Lin.x(:,4),'r',Lin.t,r2d(2)*Lin.x_hat(:,4),'k--',NL.t,r2d(2)*NL.x(:,4),'b',NL.t,r2d(2)*NL.x_hat(:,4),'g--')
+grid on
+xlabel('Seconds')
+ylabel('Meters per Second')
+title ('Velocity of Translational Oscillator')
+legend('x_4 Linear','x_4 hat Linear','x_4 Non Linear','x_4 hat Non Linear','location','northeast')
+
+
+
 
 %% To animations
 %(time vector, x1, x2, equilibrium x1, equilibrium x2)

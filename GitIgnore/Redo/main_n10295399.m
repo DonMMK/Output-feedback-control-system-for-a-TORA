@@ -105,6 +105,7 @@ Disturbance_enabled = 0;
 h = 0.01;
 
 %Run simulation
+x0 = [10*pi/180 0 -1 0]';
 Lin = sim('Linear_n10295399','Solver','ode4','FixedStep','h','StopTime','stoptime');
 NL = sim('NonLin_n10295399','Solver','ode4','FixedStep','h','StopTime','stoptime');
 
@@ -143,5 +144,59 @@ Lin_dis = sim('Linear_n10295399','Solver','ode4','FixedStep','h','StopTime','sto
 
 %% Plot Results:
 %The order of the figures are similar to the order in the report
-Plots_n10295399
+%Plots_n10295399
+
+
+r2d = [180/pi,1];
+figure('Name','OBSERVER AND OUTPUT-FEEDBACKCONTROLLER');
+%Plot 1 Control Force 
+subplot(3,2,1:2)
+
+plot(NL.t,NL.F,'b',Lin.t,Lin.F,'r--')
+grid on
+xlabel('Seconds')
+ylabel('Newton')
+title ('Control Force')
+legend('F Non-linear','F Linear')
+
+%Plot 2 x1
+subplot(3,2,3)
+plot(Lin.t,r2d(1)*Lin.x(:,1),'r',Lin.t,r2d(1)*Lin.x_hat(:,1),'k--',NL.t,r2d(1)*NL.x(:,1),'b',NL.t,r2d(1)*NL.x_hat(:,1),'g--')
+grid on
+xlabel('Seconds')
+ylabel('Degrees')
+title ('Angle of Rotating Actuator')
+legend('x_1 Linear','x_1 hat Linear','x_1 Non Linear','x_1 hat Non Linear','location','northeast')
+
+
+%Plot 3 x2
+subplot(3,2,4)
+plot(Lin.t,r2d(1)*Lin.x(:,2),'r',Lin.t,r2d(1)*Lin.x_hat(:,2),'k--',NL.t,r2d(1)*NL.x(:,2),'b',NL.t,r2d(1)*NL.x_hat(:,2),'g--')
+grid on
+xlabel('Seconds')
+ylabel('Degrees Per Second')
+title ('Velocity of Rotating Actuator')
+legend('x_2 Linear','x_2 hat Linear','x_2 Non Linear','x_2 hat Non Linear','location','northeast')
+
+
+%Plot 4 x3
+subplot(3,2,5)
+plot(Lin.t,r2d(2)*Lin.x(:,3),'r',Lin.t,r2d(2)*Lin.x_hat(:,3),'k--',NL.t,r2d(2)*NL.x(:,3),'b',NL.t,r2d(2)*NL.x_hat(:,3),'g--')
+grid on
+xlabel('Seconds')
+ylabel('Meters')
+title ('Position of Translational Oscillator')
+legend('x_3 Linear','x_3 hat Linear','x_3 Non Linear','x_3 hat Non Linear','location','northeast')
+
+%Plot 5 x4
+subplot(3,2,6)
+plot(Lin.t,r2d(2)*Lin.x(:,4),'r',Lin.t,r2d(2)*Lin.x_hat(:,4),'k--',NL.t,r2d(2)*NL.x(:,4),'b',NL.t,r2d(2)*NL.x_hat(:,4),'g--')
+grid on
+xlabel('Seconds')
+ylabel('Meters per Second')
+title ('Velocity of Translational Oscillator')
+legend('x_4 Linear','x_4 hat Linear','x_4 Non Linear','x_4 hat Non Linear','location','northeast')
+
+
+
 
