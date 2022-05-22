@@ -40,7 +40,7 @@ mov(1:length(time)) = struct('cdata',[],'colormap',[]);
 %% Dimmension of the figure window for the movie
 
 scrsz = get(0,'ScreenSize');
-figmovie=figure('Name','Movie: Pendulum on the cart','Position',[0 0 scrsz(3)*2.5/3 scrsz(3)*1.5/2.9]);
+figmovie=figure('Name','Movie: TORA','Position',[0 0 scrsz(3)*2.5/3 scrsz(3)*1.5/2.9]);
 
 %% Plot the current position of the cart-pendulum and the static ones from the previous declaration to store each frame in variable mov
 
@@ -144,7 +144,7 @@ end
 %% Create AVI file.
 
 vidObj = VideoWriter('Cart_Pendulum_Animation.avi');      % Create a video object
-vidObj.FrameRate = 10;                                    % Set frames per second in video object
+vidObj.FrameRate = 200;                                    % Set frames per second in video object
 open(vidObj);                                             % Open video object
 writeVideo(vidObj,mov);                                   % Write the frames mov in video object
 close(vidObj)                                             % Close video object

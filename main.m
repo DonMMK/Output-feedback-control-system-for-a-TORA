@@ -213,8 +213,6 @@ Boolean_Flag_for_Controller = 0;
 NonLinear_3 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
 Linear_3 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
 
-
-
 %% Plot 1: 
 
 figure('Name','Controlled Vs Uncontrolled (Linear System)');
@@ -236,3 +234,7 @@ xlabel('Seconds')
 ylabel('Newton')
 title ('Control Force')
 legend('F Linear Controlled','F Linear extreme')
+
+%% To animations
+%(time vector, x1, x2, equilibrium x1, equilibrium x2)
+TORA_Animation(Linear_1.t,Linear_1.x(:,1),Linear_1.x(:,2),x_bar(1),x_bar(2)) 
