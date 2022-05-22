@@ -181,7 +181,7 @@ else
 end
 
 desiredPoles = [-60 , -60 , -160 , -160];
-L_Value = place(Aa', C', desiredPoles)'; % ASK FOR CLARIFICATION:
+L_Value = place(Aa', C', desiredPoles)'; % ASK FOR CLARIFICATION: place vs acker
 
 Observer_In = [x_bar(1); x_bar(3)] % ASK FOR CLARIFICATION:
 
@@ -235,6 +235,17 @@ ylabel('Newton')
 title ('Control Force')
 legend('F Linear Controlled','F Linear extreme')
 
+%% Plot 4: 
+
+figure('Name','Linear Vs Non Linear ');
+%Plot 1 Control Force 
+plot(Linear_1.t,Linear_1.F,'b',NonLinear_1.t,NonLinear_1.F,'r--')
+grid on
+xlabel('Seconds')
+ylabel('Newton')
+title ('Control Force')
+legend('Linear','NonLinear ')
+
 %% To animations
 %(time vector, x1, x2, equilibrium x1, equilibrium x2)
-TORA_Animation(Linear_1.t,Linear_1.x(:,1),Linear_1.x(:,2),x_bar(1),x_bar(2)) 
+%TORA_Animation(NonLinear_1.t,NonLinear_1.x(:,1),NonLinear_1.x(:,2),x_bar(1),x_bar(2)) 
