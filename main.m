@@ -189,21 +189,30 @@ G = [x_bar(1); x_bar(3)] % ASK FOR CLARIFICATION:
 
 stop_time = 15;
 stateEstimates = 1;
-Boolean_Controller = 1;
+Boolean_Flag_for_Controller = 1;
 
 % ODE Solver step size
 h = 0.01;
 
-%% Simulation 1:
+%% Simulation 1: Standard Simulation
+
+
 
 NonLinear_1 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
 Linear_1 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
 
-%% Simulation 2:
+%% Simulation 2: Simulation without the controller
 
-Boolean_Controller = 0;
+Boolean_Flag_for_Controller = 0;
 NonLinear_2 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
 Linear_2 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
+
+%% Simulation 3: Extreme Starting Conditions
+
+Boolean_Flag_for_Controller = 0;
+NonLinear_2 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
+Linear_2 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
+
 
 
 %% Plot 1: 
