@@ -49,7 +49,7 @@ EigValues_A = eig(Aa)
 if (sum(EigValues_A < 0) >= 1)
     fprintf("This Equilibrium Point with eig value %d is Stable\n" , EigValues_A)
 elseif (sum(EigValues_A == 0) >= 1)
-   fprintf("This Equilibrium Point with eig value %d is Inconclusive\n" , EigValues_A) 
+   fprintf("This Equilibrium Point with eig value %d is Marginally Stable\n" , EigValues_A) 
 else
    fprintf("This Equilibrium Point with eig value %d is Unstable\n" , EigValues_A)
 end
@@ -66,7 +66,7 @@ EigValues_B = eig(Ab)
 if (sum(EigValues_B < 0) >= 1)
     fprintf("This Equilibrium Point with eig value %d is Stable\n" , EigValues_B)
 elseif (sum(EigValues_B == 0) >= 1)
-   fprintf("This Equilibrium Point with eig value %d is Inconclusive\n" , EigValues_B) 
+   fprintf("This Equilibrium Point with eig value %d is Marginally Stable\n" , EigValues_B) 
 else
    fprintf("This Equilibrium Point with eig value %d is Unstable\n" , EigValues_B)
 end
@@ -85,6 +85,7 @@ Bb = [0;
 
 % The C matrix has not been evaluated conclusively as the states that are
 % to be observed havent been selected yet.
+C = eye(4)
 
 % The D matrix is zero for this system
 D = zeros(2,2)
@@ -102,7 +103,7 @@ x_bar = [0 , 0 , 0 , 0]';
 
 % Starting position of the system
 ctoRadians = pi/180;
-x0 = [5*(ctoRadians) , 0 , 0.1 0]';
+x0 = [20*(ctoRadians) , 0 , 0.1 0]';
 
 % Poles
 zeta_numerator = -log(Percentage_Overshoot/100);
@@ -137,13 +138,13 @@ Rank_at_Point_a = rank(Controllablity_Point_a)
 Rank_at_Point_b = rank(Controllablity_Point_b)
 
 if (Rank_at_Point_a == 4 ) 
-    fprintf("Both eq points are full rank, therefore controllable")
+    fprintf("At point A matrix is full rank, therefore controllable\n")
 else
     fprintf("Not full rank. The rank is: %d " ,Rank_at_Point_a )
 end
 
 if (Rank_at_Point_b == 4 ) 
-    fprintf("Both eq points are full rank, therefore controllable")
+    fprintf("At point B matrix is full rank, therefore controllable\n")
 else
     fprintf("Not full rank. The rank is: %d " ,Rank_at_Point_b )
 end
@@ -174,20 +175,20 @@ Observability_Point_a = obsv(Aa,C)
 Rank2_at_Point_a = rank(Observability_Point_a)
 
 if (Rank2_at_Point_a == 4 ) 
-    fprintf("Both eq points are full rank, therefore observable")
+    fprintf( "full rank, therefore observable")
 else
     fprintf("Not full rank. The rank is: %d " ,Rank2_at_Point_a )
 end
 
-desiredPoles = [-62 , -65 , -166 , -164];
-L_Value = place(Aa', C', desiredPoles)'; % ASK FOR CLARIFICATION: place vs acker
+desiredPoles = [-60 , -60 , -160 , -160];
+L_Value = place(Aa', C', desiredPoles)'; % ASK FOR CLARIFICATION:
 
-G = [x_bar(1); x_bar(3)] % ASK FOR CLARIFICATION:
+Observer_In = [x_bar(1); x_bar(3)] % ASK FOR CLARIFICATION:
 
 
 %% Other parameters to set before simulations
 
-stop_time = 15;
+stop_time = 10;
 stateEstimates = 1;
 Boolean_Flag_for_Controller = 1;
 
@@ -195,8 +196,6 @@ Boolean_Flag_for_Controller = 1;
 h = 0.01;
 
 %% Simulation 1: Standard Simulation
-
-
 
 NonLinear_1 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
 Linear_1 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
@@ -207,11 +206,12 @@ Boolean_Flag_for_Controller = 0;
 NonLinear_2 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
 Linear_2 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
 
-%% Simulation 3: Extreme Starting Conditions
+%% Simulation 3: Starting Conditions varied to test controller
 
+x0 = [10*pi/180 0 -0.3 0]';
 Boolean_Flag_for_Controller = 0;
-NonLinear_2 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
-Linear_2 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
+NonLinear_3 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
+Linear_3 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
 
 
 
@@ -225,3 +225,14 @@ xlabel('Seconds')
 ylabel('Newton')
 title ('Control Force')
 legend('F Linear Controlled','F Linear Uncontrolled')
+
+%% Plot 2: 
+
+figure('Name','Controlled Vs Extreme (Linear System)');
+%Plot 1 Control Force 
+plot(Linear_1.t,Linear_1.F,'b',Linear_3.t,Linear_3.F,'r--')
+grid on
+xlabel('Seconds')
+ylabel('Newton')
+title ('Control Force')
+legend('F Linear Controlled','F Linear extreme')
