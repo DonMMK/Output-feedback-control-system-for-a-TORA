@@ -107,7 +107,7 @@ x_bar = [0 , 0 , 0 , 0]';
 
 % Starting position of the system
 ctoRadians = pi/180;
-x0 = [10*(ctoRadians) , 0 , 0.1 0]';
+x0 = [10*(ctoRadians) , 0 , 0.1, 0]';
 
 % Poles
 zeta_numerator = -log(Percentage_Overshoot/100);
@@ -141,13 +141,13 @@ Controllablity_Point_b = ctrb(Ab , Bb)
 Rank_at_Point_a = rank(Controllablity_Point_a)
 Rank_at_Point_b = rank(Controllablity_Point_b)
 
-if (Rank_at_Point_a == 4 ) 
+if (Rank_at_Point_a == length(Aa) ) 
     fprintf("At point A matrix is full rank, therefore controllable\n")
 else
     fprintf("Not full rank. The rank is: %d " ,Rank_at_Point_a )
 end
 
-if (Rank_at_Point_b == 4 ) 
+if (Rank_at_Point_b == length(Ab) ) 
     fprintf("At point B matrix is full rank, therefore controllable\n")
 else
     fprintf("Not full rank. The rank is: %d " ,Rank_at_Point_b )
@@ -206,16 +206,16 @@ h = 0.01;
 
 %% Simulation 2: Simulation without the controller
 
-Boolean_Flag_for_Controller = 0;
-NonLinear_2 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
-Linear_2 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
+% Boolean_Flag_for_Controller = 0;
+% NonLinear_2 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
+% Linear_2 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
 
 %% Simulation 3: Starting Conditions varied to test controller capabilities
 
 x0 = [10*pi/180 0 -1 0]';
 Boolean_Flag_for_Controller = 1;
-NL = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
-Lin = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
+NL = sim('TORA_Non_Linear', 'Solver','ode15','FixedStep','h','StopTime','stop_time');
+Lin = sim('TORA_Linear','Solver','ode15','FixedStep','h','StopTime','stop_time' );
 
 % %% Plot 1: 
 % 
