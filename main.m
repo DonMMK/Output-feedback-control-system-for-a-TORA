@@ -107,7 +107,7 @@ x_bar = [0 , 0 , 0 , 0]';
 
 % Starting position of the system
 ctoRadians = pi/180;
-x0 = [10*(ctoRadians) , 0 , 0.1, 0]';
+x0 = [20*(ctoRadians) , 0 , 0.1, 0]';
 
 % Poles
 zeta_numerator = -log(Percentage_Overshoot/100);
@@ -197,7 +197,7 @@ stateEstimates = 1;
 Boolean_Flag_for_Controller = 1;
 
 % ODE Solver step size
-h = 0.01;
+h = 0.001;
 
 %% Simulation 1: Standard Simulation
 
@@ -212,10 +212,10 @@ h = 0.01;
 
 %% Simulation 3: Starting Conditions varied to test controller capabilities
 
-x0 = [10*pi/180 0 -1 0]';
-Boolean_Flag_for_Controller = 1;
-NL = sim('TORA_Non_Linear', 'Solver','ode15','FixedStep','h','StopTime','stop_time');
-Lin = sim('TORA_Linear','Solver','ode15','FixedStep','h','StopTime','stop_time' );
+% x0 = [10*pi/180 0 -1 0]';
+% Boolean_Flag_for_Controller = 1;
+% NL = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
+% Lin = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
 
 % %% Plot 1: 
 % 

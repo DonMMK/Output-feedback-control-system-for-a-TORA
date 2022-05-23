@@ -107,7 +107,7 @@ x_bar = [0 , 0 , 0 , 0]';
 
 % Starting position of the system
 ctoRadians = pi/180;
-x0 = [10*(ctoRadians) , 0 , 0.1 0]';
+x0 = [10*(ctoRadians) , 0 , 0.1, 0]';
 
 % Poles
 zeta_numerator = -log(Percentage_Overshoot/100);
@@ -141,13 +141,13 @@ Controllablity_Point_b = ctrb(Ab , Bb)
 Rank_at_Point_a = rank(Controllablity_Point_a)
 Rank_at_Point_b = rank(Controllablity_Point_b)
 
-if (Rank_at_Point_a == 4 ) 
+if (Rank_at_Point_a == length(Aa) ) 
     fprintf("At point A matrix is full rank, therefore controllable\n")
 else
     fprintf("Not full rank. The rank is: %d " ,Rank_at_Point_a )
 end
 
-if (Rank_at_Point_b == 4 ) 
+if (Rank_at_Point_b == length(Ab) ) 
     fprintf("At point B matrix is full rank, therefore controllable\n")
 else
     fprintf("Not full rank. The rank is: %d " ,Rank_at_Point_b )
@@ -197,25 +197,25 @@ stateEstimates = 1;
 Boolean_Flag_for_Controller = 1;
 
 % ODE Solver step size
-h = 0.01;
+h = 0.001;
 
 %% Simulation 1: Standard Simulation
 
-NL = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
-Lin = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
+%NL = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
+%Lin = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
 
 %% Simulation 2: Simulation without the controller
 
-Boolean_Flag_for_Controller = 0;
-NonLinear_2 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
-Linear_2 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
+% Boolean_Flag_for_Controller = 0;
+% NonLinear_2 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
+% Linear_2 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
 
-%% Simulation 3: Starting Conditions varied to test controller
+%% Simulation 3: Starting Conditions varied to test controller capabilities
 
-x0 = [10*pi/180 0 -0.3 0]';
-Boolean_Flag_for_Controller = 0;
-NonLinear_3 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
-Linear_3 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
+% x0 = [10*pi/180 0 -1 0]';
+% Boolean_Flag_for_Controller = 1;
+% NL = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
+% Lin = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
 
 % %% Plot 1: 
 % 
@@ -256,7 +256,8 @@ figure('Name','OBSERVER AND OUTPUT-FEEDBACKCONTROLLER');
 %Plot 1 Control Force 
 subplot(3,2,1:2)
 
-plot(NL.t,NL.F,'b',Lin.t,Lin.F,'r--')
+plot(NL.t,NL.F,'b',...
+    Lin.t,Lin.F,'r--')
 grid on
 xlabel('Seconds')
 ylabel('Newton')
@@ -265,7 +266,10 @@ legend('F Non-linear','F Linear')
 
 %Plot 2 x1
 subplot(3,2,3)
-plot(Lin.t,r2d(1)*Lin.x(:,1),'r',Lin.t,r2d(1)*Lin.x_hat(:,1),'k--',NL.t,r2d(1)*NL.x(:,1),'b',NL.t,r2d(1)*NL.x_hat(:,1),'g--')
+plot(Lin.t,r2d(1)*Lin.x(:,1),'r', ...
+    Lin.t,r2d(1)*Lin.x_hat(:,1),'k--',...
+    NL.t,r2d(1)*NL.x(:,1),'b',...
+    NL.t,r2d(1)*NL.x_hat(:,1),'g--')
 grid on
 xlabel('Seconds')
 ylabel('Degrees')
@@ -275,7 +279,10 @@ legend('x_1 Linear','x_1 hat Linear','x_1 Non Linear','x_1 hat Non Linear','loca
 
 %Plot 3 x2
 subplot(3,2,4)
-plot(Lin.t,r2d(1)*Lin.x(:,2),'r',Lin.t,r2d(1)*Lin.x_hat(:,2),'k--',NL.t,r2d(1)*NL.x(:,2),'b',NL.t,r2d(1)*NL.x_hat(:,2),'g--')
+plot(Lin.t,r2d(1)*Lin.x(:,2),'r',...
+    Lin.t,r2d(1)*Lin.x_hat(:,2),'k--',...
+    NL.t,r2d(1)*NL.x(:,2),'b',...
+    NL.t,r2d(1)*NL.x_hat(:,2),'g--')
 grid on
 xlabel('Seconds')
 ylabel('Degrees Per Second')
@@ -285,7 +292,10 @@ legend('x_2 Linear','x_2 hat Linear','x_2 Non Linear','x_2 hat Non Linear','loca
 
 %Plot 4 x3
 subplot(3,2,5)
-plot(Lin.t,r2d(2)*Lin.x(:,3),'r',Lin.t,r2d(2)*Lin.x_hat(:,3),'k--',NL.t,r2d(2)*NL.x(:,3),'b',NL.t,r2d(2)*NL.x_hat(:,3),'g--')
+plot(Lin.t,r2d(2)*Lin.x(:,3),'r',...
+    Lin.t,r2d(2)*Lin.x_hat(:,3),'k--',...
+    NL.t,r2d(2)*NL.x(:,3),'b',...
+    NL.t,r2d(2)*NL.x_hat(:,3),'g--')
 grid on
 xlabel('Seconds')
 ylabel('Meters')
@@ -294,7 +304,10 @@ legend('x_3 Linear','x_3 hat Linear','x_3 Non Linear','x_3 hat Non Linear','loca
 
 %Plot 5 x4
 subplot(3,2,6)
-plot(Lin.t,r2d(2)*Lin.x(:,4),'r',Lin.t,r2d(2)*Lin.x_hat(:,4),'k--',NL.t,r2d(2)*NL.x(:,4),'b',NL.t,r2d(2)*NL.x_hat(:,4),'g--')
+plot(Lin.t,r2d(2)*Lin.x(:,4),'r',...
+    Lin.t,r2d(2)*Lin.x_hat(:,4),'k--',...
+    NL.t,r2d(2)*NL.x(:,4),'b',...
+    NL.t,r2d(2)*NL.x_hat(:,4),'g--')
 grid on
 xlabel('Seconds')
 ylabel('Meters per Second')
