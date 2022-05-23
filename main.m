@@ -256,7 +256,8 @@ figure('Name','OBSERVER AND OUTPUT-FEEDBACKCONTROLLER');
 %Plot 1 Control Force 
 subplot(3,2,1:2)
 
-plot(NL.t,NL.F,'b',Lin.t,Lin.F,'r--')
+plot(NL.t,NL.F,'b',...
+    Lin.t,Lin.F,'r--')
 grid on
 xlabel('Seconds')
 ylabel('Newton')
@@ -278,7 +279,10 @@ legend('x_1 Linear','x_1 hat Linear','x_1 Non Linear','x_1 hat Non Linear','loca
 
 %Plot 3 x2
 subplot(3,2,4)
-plot(Lin.t,r2d(1)*Lin.x(:,2),'r',Lin.t,r2d(1)*Lin.x_hat(:,2),'k--',NL.t,r2d(1)*NL.x(:,2),'b',NL.t,r2d(1)*NL.x_hat(:,2),'g--')
+plot(Lin.t,r2d(1)*Lin.x(:,2),'r',...
+    Lin.t,r2d(1)*Lin.x_hat(:,2),'k--',...
+    NL.t,r2d(1)*NL.x(:,2),'b',...
+    NL.t,r2d(1)*NL.x_hat(:,2),'g--')
 grid on
 xlabel('Seconds')
 ylabel('Degrees Per Second')
@@ -288,7 +292,10 @@ legend('x_2 Linear','x_2 hat Linear','x_2 Non Linear','x_2 hat Non Linear','loca
 
 %Plot 4 x3
 subplot(3,2,5)
-plot(Lin.t,r2d(2)*Lin.x(:,3),'r',Lin.t,r2d(2)*Lin.x_hat(:,3),'k--',NL.t,r2d(2)*NL.x(:,3),'b',NL.t,r2d(2)*NL.x_hat(:,3),'g--')
+plot(Lin.t,r2d(2)*Lin.x(:,3),'r',...
+    Lin.t,r2d(2)*Lin.x_hat(:,3),'k--',...
+    NL.t,r2d(2)*NL.x(:,3),'b',...
+    NL.t,r2d(2)*NL.x_hat(:,3),'g--')
 grid on
 xlabel('Seconds')
 ylabel('Meters')
@@ -297,7 +304,10 @@ legend('x_3 Linear','x_3 hat Linear','x_3 Non Linear','x_3 hat Non Linear','loca
 
 %Plot 5 x4
 subplot(3,2,6)
-plot(Lin.t,r2d(2)*Lin.x(:,4),'r',Lin.t,r2d(2)*Lin.x_hat(:,4),'k--',NL.t,r2d(2)*NL.x(:,4),'b',NL.t,r2d(2)*NL.x_hat(:,4),'g--')
+plot(Lin.t,r2d(2)*Lin.x(:,4),'r',...
+    Lin.t,r2d(2)*Lin.x_hat(:,4),'k--',...
+    NL.t,r2d(2)*NL.x(:,4),'b',...
+    NL.t,r2d(2)*NL.x_hat(:,4),'g--')
 grid on
 xlabel('Seconds')
 ylabel('Meters per Second')
