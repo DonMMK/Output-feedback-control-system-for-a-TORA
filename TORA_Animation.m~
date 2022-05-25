@@ -61,7 +61,7 @@ hold on;
 xplane = [xp2plane xp1plane];
 yplane = [yp1plane yp1plane];
 %area(xplane,yplane,'basevalue',-hc,'facecolor',[0.5 .5 0.5]);
-rectangle('Position', xplane)
+rectangle
 
 %% Initial position of the cart and pendulum
 

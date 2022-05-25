@@ -736,5 +736,5 @@ legend('x4 Linear','x4 hat Linear','x4 Non-Linear','x4 hat Non-Linear','location
 
 %% To animations
 %(time vector, x1, x2, equilibrium x1, equilibrium x2)
-%TORA_Animation(NL.t,NL.x(:,1),NL.x(:,2),x_bar(1),x_bar(2)) 
+TORA_Animation(NL.t,NL.x(:,1),NL.x(:,2),x_bar(1),x_bar(2)) 
 %TORA_Animation(Lin.t,Lin.x(:,1),Lin.x(:,2),x_bar(1),x_bar(2)) 

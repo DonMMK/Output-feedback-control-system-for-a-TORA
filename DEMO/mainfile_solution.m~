@@ -170,7 +170,7 @@ SD_NL = sim('SD_NL_TORA','Solver','ode4','FixedStep','h','StopTime','stoptime');
 r2d = [180/pi,1]; %Conversions from radians to degrees
 
 
-figure('Name',' Discrete Time Model (Linear)');
+figure('Name',' Discrete Time Model');
 subplot(3,2,1:2)
 stem(DT_Lin.t,DT_Lin.F,'b')
 hold on
@@ -224,7 +224,7 @@ legend('x4 Discrete-Time Model','x4 Sampled-Data Model','location','northeast')
 r2d = [180/pi,1]; %Conversions from radians to degrees
 
 
-figure('Name',' Discrete Time Model (Non-Linear)');
+figure('Name',' Discrete Time Model');
 subplot(3,2,1:2)
 stem(DT_NL.t,DT_NL.F,'b')
 hold on
@@ -268,7 +268,7 @@ legend('x3 Discrete-Time Model','x3 Sampled-Data Model','location','northeast')
 subplot(3,2,6)
 stem(DT_NL.t,r2d(2)*DT_NL.x(:,4),'b')
 hold on
-plot(SD_NL.t,r2d(2)*SD_NL.x(:,4),'r','LineWidth',2)
+plot(SD_L.t,r2d(2)*SD_NL.x(:,4),'r','LineWidth',2)
 xlabel('Time(s)')
 ylabel('Velocity')
 title ('State x4: Velocity of Translational oscillator')
