@@ -1,9 +1,9 @@
 %% EGH445 Modern Control TORA System %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Author:
-% Submission Date:
-% Acknowledgements
+% Author: Don Kaluarachchi n10496262
+% Submission Date: 23th May 2022
+% Acknowledgements: Lab solutions, Cart Pendulum soltuions, Tutors, Slack discussions
 
 %% Reset Workspace to zero
 close all; clear all ; clc
@@ -97,17 +97,17 @@ Bb = [0;
 %% Pole Placement
 
 % Required Settling Time
-Required_Settlting_Time = 4;  % ASK FOR CLARIFICATION:
+Required_Settlting_Time = 4;  
 
 % Percentage Overshoot
-Percentage_Overshoot = 2; % ASK FOR CLARIFICATION:
+Percentage_Overshoot = 2; 
 
 % Equilibrium Point for the system
 x_bar = [0 , 0 , 0 , 0]';
 
 % Starting position of the system
 ctoRadians = pi/180;
-x0 = [20*(ctoRadians) , 0 , 0.1, 0]';
+x0 = [10*(ctoRadians) , 0 , 0.1, 0]';
 
 % Poles
 zeta_numerator = -log(Percentage_Overshoot/100);
@@ -122,15 +122,15 @@ wn = 4/(Required_Settlting_Time*zeta);
 %Pole 1 and 2 
 Poles_1_2 = roots([1, 2*zeta*wn, wn^2]) 
 %Pole 3 and 4 
-Pole_3 = 9 * Poles_1_2(1)
-Pole_4 = 9 * Poles_1_2(2)
+Pole_3 = 7 * Poles_1_2(1)
+Pole_4 = 7 * Poles_1_2(2)
 
 
 
            
 %% Control Design using state feedback
-% Controllability Matrix
 
+% Controllability Matrix
 C_Aa_Ba = [ Ba , Aa * Ba ,  (Aa^2) * Ba ,  (Aa^3) * Ba] ;
 Controllablity_Point_a = ctrb(Aa , Ba)
 
@@ -153,8 +153,8 @@ else
     fprintf("Not full rank. The rank is: %d " ,Rank_at_Point_b )
 end
 
-% Only Equilibrium Point A will be considered because
-% ASK FOR CLARIFICATION:
+% Only Equilibrium Point A will be considered because a and b share complex
+% conjugate values
 
 Pole_P = [Poles_1_2(1) , Poles_1_2(2), Pole_3 , Pole_4 ]
 
@@ -184,9 +184,9 @@ else
 end
 
 desiredPoles = [-65 , -65 , -165 , -165];
-L_Value = place(Aa', C', desiredPoles)'; % ASK FOR CLARIFICATION: place vs acker
+L_Value = place(Aa', C', desiredPoles)'; % place vs acker
 
-Observer_In = [x_bar(1); x_bar(3)] % ASK FOR CLARIFICATION:
+Observer_In = [x_bar(1); x_bar(3)] % Equilibrium Output y_tilda
 
 
 %% Other parameters to set before simulations
@@ -194,6 +194,7 @@ Observer_In = [x_bar(1); x_bar(3)] % ASK FOR CLARIFICATION:
 stop_time = 10;
 stateEstimates = 1;
 Boolean_Flag_for_Controller = 1;
+Addnoise = 0;
 
 % ODE Solver step size
 h = 0.01;
@@ -205,17 +206,61 @@ Lin = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' )
 
 %% Simulation 2: Simulation without the controller
 
+stateEstimates = 1;
 Boolean_Flag_for_Controller = 0;
 NL_No_C = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
 L_No_C = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
 
-%% Simulation 3: Starting Conditions varied to test controller capabilities
+%% Simulation 3: Simulation without the observer
 
-x0 = [10*pi/180 0 -1 0]';
 Boolean_Flag_for_Controller = 1;
+stateEstimates = 0;
+NL_No_O = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
+L_No_O = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
+
+
+%% Simulation 4: Starting Conditions varied to test controller capabilities
+% Angle changed 10 deg -> 90
+x0 = [90*pi/180 0 +0.1 0]';
+
+Boolean_Flag_for_Controller = 1;
+stateEstimates = 1;
 NL_Hard_1 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
 Lin_Hard_1 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
 
+%% Simulation 5: Starting Conditions varied to test controller capabilities (2)
+% Distance changed 0.1 -> 0.28
+x0 = [10*pi/180 0 +0.28 0]';
+Boolean_Flag_for_Controller = 1;
+stateEstimates = 1;
+NL_Hard_2 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
+Lin_Hard_2 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
+
+
+%% Simulation 6: Starting Conditions varied to test controller capabilities (3)
+% Distance and angle changed
+x0 = [30*pi/180 0 -0.3 0]';
+Boolean_Flag_for_Controller = 1;
+stateEstimates = 1;
+NL_Hard_3 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
+Lin_Hard_3 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
+
+%% Simulation 7: Starting Conditions varied to test controller capabilities (3)
+% Add noise
+x0 = [10*pi/180 0 0.1 0]';
+Boolean_Flag_for_Controller = 1;
+stateEstimates = 1;
+Addnoise = 1;
+NL_Hard_4 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
+Lin_Hard_4 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
+
+%% Simulation X: Starting Conditions varied to test controller capabilities (4)
+% Distance changed extreme
+%x0 = [10*pi/180 0 +1 0]';
+%Boolean_Flag_for_Controller = 1;
+%stateEstimates = 1;
+%NL_Hard_4 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
+%Lin_Hard_4 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
 
 
 %% Plot 1
@@ -224,62 +269,54 @@ figure('Name',' Uncontrolled vs Controlled response: Non Linear');
 %Control Force 
 subplot(3,2,1:2)
 
-plot(NL.t,NL.F,'b', Lin.t,Lin.F,'r--')
+plot(NL.t,NL.F,'b', NL_No_C.t,NL_No_C.F,'r--')
 grid on
 xlabel('Time(s)')
 ylabel('Force(N)')
 title ('Control Force')
-legend('Non-linear','Linear')
+legend('Non-Linear','Non-Linear Uncontrolled')
 
 % For state x1
 subplot(3,2,3)
-plot(Lin.t,r2d(1)*Lin.x(:,1),'g-', ...
-    Lin.t,r2d(1)*Lin.x_hat(:,1),'k--',...
-    NL.t,r2d(1)*NL.x(:,1),'r',...
-    NL.t,r2d(1)*NL.x_hat(:,1),'b--')
+plot(NL_No_C.t,r2d(1)*NL_No_C.x(:,1),'g', ...
+    NL.t,r2d(1)*NL.x(:,1),'r')
 grid on
 xlabel('Time(s)')
 ylabel('Angle(deg)')
 title ('State x1: Angle of rotating actuator')
-legend('x1 Linear','x1 hat Linear','x1 Non-Linear','x1 hat Non-Linear','location','northeast')
+legend('x1 Non-Linear Uncontrolled','x1 Non-Linear','location','northeast')
 
 
 % For state x2
 subplot(3,2,4)
-plot(Lin.t,r2d(1)*Lin.x(:,2),'g',...
-    Lin.t,r2d(1)*Lin.x_hat(:,2),'k--',...
-    NL.t,r2d(1)*NL.x(:,2),'r',...
-    NL.t,r2d(1)*NL.x_hat(:,2),'b--')
+plot(NL_No_C.t,r2d(1)*NL_No_C.x(:,2),'g',...
+    NL.t,r2d(1)*NL.x(:,2),'r')
 grid on
 xlabel('Time(s)')
 ylabel('Angular Velocity(deg/s)')
 title ('State x2: Angular velocity of rotating actuator')
-legend('x2 Linear','x2 hat Linear','x2 Non-Linear','x2 hat Non-Linear','location','northeast')
+legend('x2 Non-Linear Uncontrolled','x2 Non-Linear','location','northeast')
 
 
 % For state x3
 subplot(3,2,5)
-plot(Lin.t,r2d(2)*Lin.x(:,3),'g',...
-    Lin.t,r2d(2)*Lin.x_hat(:,3),'k--',...
-    NL.t,r2d(2)*NL.x(:,3),'r',...
-    NL.t,r2d(2)*NL.x_hat(:,3),'b--')
+plot(NL_No_C.t,r2d(2)*NL_No_C.x(:,3),'g',...
+    NL.t,r2d(2)*NL.x(:,3),'r')
 grid on
 xlabel('Time(s)')
 ylabel('Position(m)')
 title ('State x3: Position of Translational oscillator')
-legend('x3 Linear','x3 hat Linear','x3 Non-Linear','x3 hat Non-Linear','location','northeast')
+legend('x3 Non-Linear Uncontrolled','x3 Non-Linear','location','northeast')
 
 % For state x4
 subplot(3,2,6)
-plot(Lin.t,r2d(2)*Lin.x(:,4),'g',...
-    Lin.t,r2d(2)*Lin.x_hat(:,4),'k--',...
-    NL.t,r2d(2)*NL.x(:,4),'r',...
-    NL.t,r2d(2)*NL.x_hat(:,4),'b--')
+plot(NL_No_C.t,r2d(2)*NL_No_C.x(:,4),'g',...
+    NL.t,r2d(2)*NL.x(:,4),'r')
 grid on
 xlabel('Time(s)')
 ylabel('Velocity')
 title ('State x4: Velocity of Translational oscillator')
-legend('x3 Linear','x3 hat Linear','x3 Non-Linear','x3 hat Non-Linear','location','northeast')
+legend('x4 Non-Linear Uncontrolled','x4 Non-Linear','location','northeast')
 
 %% Plot 2
 r2d = [180/pi,1];
@@ -287,134 +324,117 @@ figure('Name',' Uncontrolled vs Controlled response: Linear');
 %Control Force 
 subplot(3,2,1:2)
 
-plot(NL.t,NL.F,'b', Lin.t,Lin.F,'r--')
+plot(Lin.t,Lin.F,'b', L_No_C.t,L_No_C.F,'r--')
 grid on
 xlabel('Time(s)')
 ylabel('Force(N)')
 title ('Control Force')
-legend('Non-linear','Linear')
+legend('Linear','Linear Uncontrolled')
 
 % For state x1
 subplot(3,2,3)
-plot(Lin.t,r2d(1)*Lin.x(:,1),'g-', ...
-    Lin.t,r2d(1)*Lin.x_hat(:,1),'k--',...
-    NL.t,r2d(1)*NL.x(:,1),'r',...
-    NL.t,r2d(1)*NL.x_hat(:,1),'b--')
+plot(L_No_C.t,r2d(1)*L_No_C.x(:,1),'g', ...
+    Lin.t,r2d(1)*Lin.x(:,1),'r')
 grid on
 xlabel('Time(s)')
 ylabel('Angle(deg)')
 title ('State x1: Angle of rotating actuator')
-legend('x1 Linear','x1 hat Linear','x1 Non-Linear','x1 hat Non-Linear','location','northeast')
+legend('x1 Linear Uncontrolled','x1 Linear','location','northeast')
 
 
 % For state x2
 subplot(3,2,4)
-plot(Lin.t,r2d(1)*Lin.x(:,2),'g',...
-    Lin.t,r2d(1)*Lin.x_hat(:,2),'k--',...
-    NL.t,r2d(1)*NL.x(:,2),'r',...
-    NL.t,r2d(1)*NL.x_hat(:,2),'b--')
+plot(L_No_C.t,r2d(1)*L_No_C.x(:,2),'g',...
+    Lin.t,r2d(1)*Lin.x(:,2),'r')
 grid on
 xlabel('Time(s)')
 ylabel('Angular Velocity(deg/s)')
 title ('State x2: Angular velocity of rotating actuator')
-legend('x2 Linear','x2 hat Linear','x2 Non-Linear','x2 hat Non-Linear','location','northeast')
+legend('x2 Linear Uncontrolled','x2 Linear','location','northeast')
 
 
 % For state x3
 subplot(3,2,5)
-plot(Lin.t,r2d(2)*Lin.x(:,3),'g',...
-    Lin.t,r2d(2)*Lin.x_hat(:,3),'k--',...
-    NL.t,r2d(2)*NL.x(:,3),'r',...
-    NL.t,r2d(2)*NL.x_hat(:,3),'b--')
+plot(L_No_C.t,r2d(2)*L_No_C.x(:,3),'g',...
+    Lin.t,r2d(2)*Lin.x(:,3),'r')
 grid on
 xlabel('Time(s)')
 ylabel('Position(m)')
 title ('State x3: Position of Translational oscillator')
-legend('x3 Linear','x3 hat Linear','x3 Non-Linear','x3 hat Non-Linear','location','northeast')
+legend('x3 Linear Uncontrolled','x3 Linear','location','northeast')
 
 % For state x4
 subplot(3,2,6)
-plot(Lin.t,r2d(2)*Lin.x(:,4),'g',...
-    Lin.t,r2d(2)*Lin.x_hat(:,4),'k--',...
-    NL.t,r2d(2)*NL.x(:,4),'r',...
-    NL.t,r2d(2)*NL.x_hat(:,4),'b--')
+plot(L_No_C.t,r2d(2)*L_No_C.x(:,4),'g',...
+    Lin.t,r2d(2)*Lin.x(:,4),'r')
 grid on
 xlabel('Time(s)')
 ylabel('Velocity')
 title ('State x4: Velocity of Translational oscillator')
-legend('x3 Linear','x3 hat Linear','x3 Non-Linear','x3 hat Non-Linear','location','northeast')
-
+legend('x4 Linear Uncontrolled','x4 Linear','location','northeast')
 
 %% Plot 3
 r2d = [180/pi,1];
-figure('Name','Difficult Starting Conditions: Positive angle');
-%Plot 1 Control Force 
+figure('Name',' Unobservable vs Observable response: Linear');
+%Control Force 
 subplot(3,2,1:2)
 
-plot(NL.t,NL.F,'b', Lin.t,Lin.F,'r--')
+plot(Lin.t,Lin.F,'b', L_No_O.t,L_No_O.F,'r--')
 grid on
 xlabel('Time(s)')
 ylabel('Force(N)')
 title ('Control Force')
-legend('Non-linear','Linear')
+legend('Linear','Linear Unobserved')
 
 % For state x1
 subplot(3,2,3)
-plot(Lin.t,r2d(1)*Lin.x(:,1),'g-', ...
-    Lin.t,r2d(1)*Lin.x_hat(:,1),'k--',...
-    NL.t,r2d(1)*NL.x(:,1),'r',...
-    NL.t,r2d(1)*NL.x_hat(:,1),'b--')
+plot(L_No_O.t,r2d(1)*L_No_O.x(:,1),'g', ...
+    Lin.t,r2d(1)*Lin.x(:,1),'r')
 grid on
 xlabel('Time(s)')
 ylabel('Angle(deg)')
 title ('State x1: Angle of rotating actuator')
-legend('x1 Linear','x1 hat Linear','x1 Non-Linear','x1 hat Non-Linear','location','northeast')
+legend('x1 Linear Unobserved','x1 Linear','location','northeast')
 
 
 % For state x2
 subplot(3,2,4)
-plot(Lin.t,r2d(1)*Lin.x(:,2),'g',...
-    Lin.t,r2d(1)*Lin.x_hat(:,2),'k--',...
-    NL.t,r2d(1)*NL.x(:,2),'r',...
-    NL.t,r2d(1)*NL.x_hat(:,2),'b--')
+plot(L_No_O.t,r2d(1)*L_No_O.x(:,2),'g',...
+    Lin.t,r2d(1)*Lin.x(:,2),'r')
 grid on
 xlabel('Time(s)')
 ylabel('Angular Velocity(deg/s)')
 title ('State x2: Angular velocity of rotating actuator')
-legend('x2 Linear','x2 hat Linear','x2 Non-Linear','x2 hat Non-Linear','location','northeast')
+legend('x2 Linear Unobserved','x2 Linear','location','northeast')
 
 
 % For state x3
 subplot(3,2,5)
-plot(Lin.t,r2d(2)*Lin.x(:,3),'g',...
-    Lin.t,r2d(2)*Lin.x_hat(:,3),'k--',...
-    NL.t,r2d(2)*NL.x(:,3),'r',...
-    NL.t,r2d(2)*NL.x_hat(:,3),'b--')
+plot(L_No_O.t,r2d(2)*L_No_O.x(:,3),'g',...
+    Lin.t,r2d(2)*Lin.x(:,3),'r')
 grid on
 xlabel('Time(s)')
 ylabel('Position(m)')
 title ('State x3: Position of Translational oscillator')
-legend('x3 Linear','x3 hat Linear','x3 Non-Linear','x3 hat Non-Linear','location','northeast')
+legend('x3 Linear Unobserved','x3 Linear','location','northeast')
 
 % For state x4
 subplot(3,2,6)
-plot(Lin.t,r2d(2)*Lin.x(:,4),'g',...
-    Lin.t,r2d(2)*Lin.x_hat(:,4),'k--',...
-    NL.t,r2d(2)*NL.x(:,4),'r',...
-    NL.t,r2d(2)*NL.x_hat(:,4),'b--')
+plot(L_No_O.t,r2d(2)*L_No_O.x(:,4),'g',...
+    Lin.t,r2d(2)*Lin.x(:,4),'r')
 grid on
 xlabel('Time(s)')
 ylabel('Velocity')
 title ('State x4: Velocity of Translational oscillator')
-legend('x3 Linear','x3 hat Linear','x3 Non-Linear','x3 hat Non-Linear','location','northeast')
+legend('x4 Linear Unobserved','x4 Linear','location','northeast')
 
 %% Plot 4
 r2d = [180/pi,1];
-figure('Name','Difficult Starting Conditions: Negative angle');
+figure('Name','Difficult Starting Conditions: 1');
 %Plot 1 Control Force 
 subplot(3,2,1:2)
 
-plot(NL.t,NL.F,'b', Lin.t,Lin.F,'r--')
+plot(NL_Hard_1.t,NL_Hard_1.F,'b', Lin_Hard_1.t,Lin_Hard_1.F,'r--')
 grid on
 xlabel('Time(s)')
 ylabel('Force(N)')
@@ -423,10 +443,10 @@ legend('Non-linear','Linear')
 
 % For state x1
 subplot(3,2,3)
-plot(Lin.t,r2d(1)*Lin.x(:,1),'g-', ...
-    Lin.t,r2d(1)*Lin.x_hat(:,1),'k--',...
-    NL.t,r2d(1)*NL.x(:,1),'r',...
-    NL.t,r2d(1)*NL.x_hat(:,1),'b--')
+plot(Lin_Hard_1.t,r2d(1)*Lin_Hard_1.x(:,1),'g', ...
+    Lin_Hard_1.t,r2d(1)*Lin_Hard_1.x_hat(:,1),'k--',...
+    NL_Hard_1.t,r2d(1)*NL_Hard_1.x(:,1),'r',...
+    NL_Hard_1.t,r2d(1)*NL_Hard_1.x_hat(:,1),'b--')
 grid on
 xlabel('Time(s)')
 ylabel('Angle(deg)')
@@ -436,10 +456,10 @@ legend('x1 Linear','x1 hat Linear','x1 Non-Linear','x1 hat Non-Linear','location
 
 % For state x2
 subplot(3,2,4)
-plot(Lin.t,r2d(1)*Lin.x(:,2),'g',...
-    Lin.t,r2d(1)*Lin.x_hat(:,2),'k--',...
-    NL.t,r2d(1)*NL.x(:,2),'r',...
-    NL.t,r2d(1)*NL.x_hat(:,2),'b--')
+plot(Lin_Hard_1.t,r2d(1)*Lin_Hard_1.x(:,2),'g',...
+    Lin_Hard_1.t,r2d(1)*Lin_Hard_1.x_hat(:,2),'k--',...
+    NL_Hard_1.t,r2d(1)*NL_Hard_1.x(:,2),'r',...
+    NL_Hard_1.t,r2d(1)*NL_Hard_1.x_hat(:,2),'b--')
 grid on
 xlabel('Time(s)')
 ylabel('Angular Velocity(deg/s)')
@@ -449,10 +469,10 @@ legend('x2 Linear','x2 hat Linear','x2 Non-Linear','x2 hat Non-Linear','location
 
 % For state x3
 subplot(3,2,5)
-plot(Lin.t,r2d(2)*Lin.x(:,3),'g',...
-    Lin.t,r2d(2)*Lin.x_hat(:,3),'k--',...
-    NL.t,r2d(2)*NL.x(:,3),'r',...
-    NL.t,r2d(2)*NL.x_hat(:,3),'b--')
+plot(Lin_Hard_1.t,r2d(2)*Lin_Hard_1.x(:,3),'g',...
+    Lin_Hard_1.t,r2d(2)*Lin_Hard_1.x_hat(:,3),'k--',...
+    NL_Hard_1.t,r2d(2)*NL_Hard_1.x(:,3),'r',...
+    NL_Hard_1.t,r2d(2)*NL_Hard_1.x_hat(:,3),'b--')
 grid on
 xlabel('Time(s)')
 ylabel('Position(m)')
@@ -461,18 +481,195 @@ legend('x3 Linear','x3 hat Linear','x3 Non-Linear','x3 hat Non-Linear','location
 
 % For state x4
 subplot(3,2,6)
-plot(Lin.t,r2d(2)*Lin.x(:,4),'g',...
-    Lin.t,r2d(2)*Lin.x_hat(:,4),'k--',...
-    NL.t,r2d(2)*NL.x(:,4),'r',...
-    NL.t,r2d(2)*NL.x_hat(:,4),'b--')
+plot(Lin_Hard_1.t,r2d(2)*Lin_Hard_1.x(:,4),'g',...
+    Lin_Hard_1.t,r2d(2)*Lin_Hard_1.x_hat(:,4),'k--',...
+    NL_Hard_1.t,r2d(2)*NL_Hard_1.x(:,4),'r',...
+    NL_Hard_1.t,r2d(2)*NL_Hard_1.x_hat(:,4),'b--')
 grid on
 xlabel('Time(s)')
 ylabel('Velocity')
 title ('State x4: Velocity of Translational oscillator')
-legend('x3 Linear','x3 hat Linear','x3 Non-Linear','x3 hat Non-Linear','location','northeast')
-
+legend('x4 Linear','x4 hat Linear','x4 Non-Linear','x4 hat Non-Linear','location','northeast')
 
 %% Plot 5
+r2d = [180/pi,1];
+figure('Name','Difficult Starting Conditions: 2');
+%Plot 1 Control Force 
+subplot(3,2,1:2)
+
+plot(NL_Hard_2.t,NL_Hard_2.F,'b', Lin_Hard_2.t,Lin_Hard_2.F,'r--')
+grid on
+xlabel('Time(s)')
+ylabel('Force(N)')
+title ('Control Force')
+legend('Non-linear','Linear')
+
+% For state x1
+subplot(3,2,3)
+plot(Lin_Hard_2.t,r2d(1)*Lin_Hard_2.x(:,1),'g', ...
+    Lin_Hard_2.t,r2d(1)*Lin_Hard_2.x_hat(:,1),'k--',...
+    NL_Hard_2.t,r2d(1)*NL_Hard_2.x(:,1),'r',...
+    NL_Hard_2.t,r2d(1)*NL_Hard_2.x_hat(:,1),'b--')
+grid on
+xlabel('Time(s)')
+ylabel('Angle(deg)')
+title ('State x1: Angle of rotating actuator')
+legend('x1 Linear','x1 hat Linear','x1 Non-Linear','x1 hat Non-Linear','location','northeast')
+
+
+% For state x2
+subplot(3,2,4)
+plot(Lin_Hard_2.t,r2d(1)*Lin_Hard_2.x(:,2),'g',...
+    Lin_Hard_2.t,r2d(1)*Lin_Hard_2.x_hat(:,2),'k--',...
+    NL_Hard_2.t,r2d(1)*NL_Hard_2.x(:,2),'r',...
+    NL_Hard_2.t,r2d(1)*NL_Hard_2.x_hat(:,2),'b--')
+grid on
+xlabel('Time(s)')
+ylabel('Angular Velocity(deg/s)')
+title ('State x2: Angular velocity of rotating actuator')
+legend('x2 Linear','x2 hat Linear','x2 Non-Linear','x2 hat Non-Linear','location','northeast')
+
+
+% For state x3
+subplot(3,2,5)
+plot(Lin_Hard_2.t,r2d(2)*Lin_Hard_2.x(:,3),'g',...
+    Lin_Hard_2.t,r2d(2)*Lin_Hard_2.x_hat(:,3),'k--',...
+    NL_Hard_2.t,r2d(2)*NL_Hard_2.x(:,3),'r',...
+    NL_Hard_2.t,r2d(2)*NL_Hard_2.x_hat(:,3),'b--')
+grid on
+xlabel('Time(s)')
+ylabel('Position(m)')
+title ('State x3: Position of Translational oscillator')
+legend('x3 Linear','x3 hat Linear','x3 Non-Linear','x3 hat Non-Linear','location','northeast')
+
+% For state x4
+subplot(3,2,6)
+plot(Lin_Hard_2.t,r2d(2)*Lin_Hard_2.x(:,4),'g',...
+    Lin_Hard_2.t,r2d(2)*Lin_Hard_2.x_hat(:,4),'k--',...
+    NL_Hard_2.t,r2d(2)*NL_Hard_2.x(:,4),'r',...
+    NL_Hard_2.t,r2d(2)*NL_Hard_2.x_hat(:,4),'b--')
+grid on
+xlabel('Time(s)')
+ylabel('Velocity')
+title ('State x4: Velocity of Translational oscillator')
+legend('x4 Linear','x4 hat Linear','x4 Non-Linear','x4 hat Non-Linear','location','northeast')
+
+%% Plot 6
+r2d = [180/pi,1];
+figure('Name','Difficult Starting Conditions: 3');
+%Plot 1 Control Force 
+subplot(3,2,1:2)
+
+plot(NL_Hard_3.t,NL_Hard_3.F,'b', Lin_Hard_3.t,Lin_Hard_3.F,'r--')
+grid on
+xlabel('Time(s)')
+ylabel('Force(N)')
+title ('Control Force')
+legend('Non-linear','Linear')
+
+% For state x1
+subplot(3,2,3)
+plot(Lin_Hard_3.t,r2d(1)*Lin_Hard_3.x(:,1),'g', ...
+    Lin_Hard_3.t,r2d(1)*Lin_Hard_3.x_hat(:,1),'k--',...
+    NL_Hard_3.t,r2d(1)*NL_Hard_3.x(:,1),'r',...
+    NL_Hard_3.t,r2d(1)*NL_Hard_3.x_hat(:,1),'b--')
+grid on
+xlabel('Time(s)')
+ylabel('Angle(deg)')
+title ('State x1: Angle of rotating actuator')
+legend('x1 Linear','x1 hat Linear','x1 Non-Linear','x1 hat Non-Linear','location','northeast')
+
+
+% For state x2
+subplot(3,2,4)
+plot(Lin_Hard_3.t,r2d(1)*Lin_Hard_3.x(:,2),'g',...
+    Lin_Hard_3.t,r2d(1)*Lin_Hard_3.x_hat(:,2),'k--',...
+    NL_Hard_3.t,r2d(1)*NL_Hard_3.x(:,2),'r',...
+    NL_Hard_3.t,r2d(1)*NL_Hard_3.x_hat(:,2),'b--')
+grid on
+xlabel('Time(s)')
+ylabel('Angular Velocity(deg/s)')
+title ('State x2: Angular velocity of rotating actuator')
+legend('x2 Linear','x2 hat Linear','x2 Non-Linear','x2 hat Non-Linear','location','northeast')
+
+
+% For state x3
+subplot(3,2,5)
+plot(Lin_Hard_3.t,r2d(2)*Lin_Hard_3.x(:,3),'g',...
+    Lin_Hard_3.t,r2d(2)*Lin_Hard_3.x_hat(:,3),'k--',...
+    NL_Hard_3.t,r2d(2)*NL_Hard_3.x(:,3),'r',...
+    NL_Hard_3.t,r2d(2)*NL_Hard_3.x_hat(:,3),'b--')
+grid on
+xlabel('Time(s)')
+ylabel('Position(m)')
+title ('State x3: Position of Translational oscillator')
+legend('x3 Linear','x3 hat Linear','x3 Non-Linear','x3 hat Non-Linear','location','northeast')
+
+% For state x4
+subplot(3,2,6)
+plot(Lin_Hard_3.t,r2d(2)*Lin_Hard_3.x(:,4),'g',...
+    Lin_Hard_3.t,r2d(2)*Lin_Hard_3.x_hat(:,4),'k--',...
+    NL_Hard_3.t,r2d(2)*NL_Hard_3.x(:,4),'r',...
+    NL_Hard_3.t,r2d(2)*NL_Hard_3.x_hat(:,4),'b--')
+grid on
+xlabel('Time(s)')
+ylabel('Velocity')
+title ('State x4: Velocity of Translational oscillator')
+legend('x4 Linear','x4 hat Linear','x4 Non-Linear','x4 hat Non-Linear','location','northeast')
+
+%% Plot 7
+r2d = [180/pi,1];
+figure('Name','Difficult Starting Conditions: 4 - Disturbance');
+%Plot 1 Control Force 
+subplot(3,2,1:2)
+
+plot(Lin_Hard_4.t,Lin_Hard_4.F,'r--')
+grid on
+xlabel('Time(s)')
+ylabel('Force(N)')
+title ('Control Force')
+legend('Linear')
+
+% For state x1
+subplot(3,2,3)
+plot(Lin_Hard_4.t,r2d(1)*Lin_Hard_4.x(:,1),'g')
+grid on
+xlabel('Time(s)')
+ylabel('Angle(deg)')
+title ('State x1: Angle of rotating actuator')
+legend('x1 Linear','location','northeast')
+
+
+% For state x2
+subplot(3,2,4)
+plot(Lin_Hard_4.t,r2d(1)*Lin_Hard_4.x(:,2),'g')
+grid on
+xlabel('Time(s)')
+ylabel('Angular Velocity(deg/s)')
+title ('State x2: Angular velocity of rotating actuator')
+legend('x2 Linear','location','northeast')
+
+
+% For state x3
+subplot(3,2,5)
+plot(Lin_Hard_4.t,r2d(2)*Lin_Hard_4.x(:,3),'g')
+grid on
+xlabel('Time(s)')
+ylabel('Position(m)')
+title ('State x3: Position of Translational oscillator')
+legend('x3 Linear','location','northeast')
+
+% For state x4
+subplot(3,2,6)
+plot(Lin_Hard_4.t,r2d(2)*Lin_Hard_4.x(:,4),'g')
+grid on
+xlabel('Time(s)')
+ylabel('Velocity')
+title ('State x4: Velocity of Translational oscillator')
+legend('x4 Linear','location','northeast')
+
+
+%% Plot 8
 r2d = [180/pi,1];
 figure('Name','Final TORA response');
 %Plot 1 Control Force 
@@ -487,7 +684,7 @@ legend('Non-linear','Linear')
 
 % For state x1
 subplot(3,2,3)
-plot(Lin.t,r2d(1)*Lin.x(:,1),'g-', ...
+plot(Lin.t,r2d(1)*Lin.x(:,1),'g', ...
     Lin.t,r2d(1)*Lin.x_hat(:,1),'k--',...
     NL.t,r2d(1)*NL.x(:,1),'r',...
     NL.t,r2d(1)*NL.x_hat(:,1),'b--')
@@ -533,7 +730,7 @@ grid on
 xlabel('Time(s)')
 ylabel('Velocity')
 title ('State x4: Velocity of Translational oscillator')
-legend('x3 Linear','x3 hat Linear','x3 Non-Linear','x3 hat Non-Linear','location','northeast')
+legend('x4 Linear','x4 hat Linear','x4 Non-Linear','x4 hat Non-Linear','location','northeast')
 
 
 
