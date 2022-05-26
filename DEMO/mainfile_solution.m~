@@ -290,11 +290,11 @@ legend('x4 Discrete-Time Model','x4 Sampled-Data Model','location','northeast')
 r2d = [180/pi,1]; %Conversions from radians to degrees
 
 
-figure('Name',' SD Linear vs SD Non Linear 1');
+figure('Name',' SD Linear vs SD Non Linear');
 subplot(3,2,1:2)
 plot(SD_Lin.t,SD_Lin.F,'b')
 hold on
-plot(SD_NL.t,SD_NL.F,'r')
+plot(SD_NL.t,SD_NL.F,'r','LineWidth',2)
 grid on
 xlabel('Time(s)')
 ylabel('Force(N)')
@@ -305,7 +305,7 @@ legend('F Sampled-Data Model','F Sampled-data NL model')
 subplot(3,2,3)
 plot(SD_Lin.t,r2d(1)*SD_Lin.x(:,1),'b')
 hold on
-plot(SD_NL.t,r2d(1)*SD_NL.x1(:,1),'r')
+plot(SD_NL.t,r2d(1)*SD_NL.x1(:,1),'r','LineWidth',2)
 xlabel('Time(s)')
 ylabel('Angle(deg)')
 title ('State x1: Angle of rotating actuator')
@@ -315,7 +315,7 @@ legend('x1 Sampled-Data Model','x1 Sampled-Data NL Model','location','northeast'
 subplot(3,2,4)
 plot(SD_Lin.t,r2d(1)*SD_Lin.x(:,2),'b')
 hold on
-plot(SD_NL.t,r2d(1)*SD_NL.x2(:,1),'r')
+plot(SD_NL.t,r2d(1)*SD_NL.x2(:,1),'r','LineWidth',2)
 xlabel('Time(s)')
 ylabel('Angular Velocity(deg/s)')
 title ('State x2: Angular velocity of rotating actuator')
@@ -325,7 +325,7 @@ legend('x2 Sampled-Data Model','x2 Sampled-Data NL Model','location','northeast'
 subplot(3,2,5)
 plot(SD_Lin.t,r2d(2)*SD_Lin.x(:,3),'b')
 hold on
-plot(SD_NL.t,r2d(2)*SD_NL.x3(:,1),'r')
+plot(SD_NL.t,r2d(2)*SD_NL.x3(:,1),'r','LineWidth',2)
 xlabel('Time(s)')
 ylabel('Position(m)')
 title ('State x3: Position of Translational oscillator')
@@ -334,7 +334,7 @@ legend('x3 Sampled-Data Model','x3 Sampled-Data NL Model','location','northeast'
 subplot(3,2,6)
 plot(SD_Lin.t,r2d(2)*SD_Lin.x(:,4),'b')
 hold on
-plot(SD_NL.t,r2d(2)*SD_NL.x4(:,1),'r')
+plot(SD_NL.t,r2d(2)*SD_NL2.x(:,4),'r','LineWidth',2)
 xlabel('Time(s)')
 ylabel('Velocity')
 title ('State x4: Velocity of Translational oscillator')
@@ -344,7 +344,7 @@ legend('x4 Sampled-Data Model','x4 Sampled-Data NL Model','location','northeast'
 r2d = [180/pi,1]; %Conversions from radians to degrees
 
 
-figure('Name',' SD Linear vs SD Non Linear 2');
+figure('Name',' SD Linear vs SD Non Linear');
 subplot(3,2,1:2)
 plot(SD_Lin.t,SD_Lin.F,'b')
 hold on
