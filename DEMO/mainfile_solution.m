@@ -125,7 +125,7 @@ SD_Lin = sim('SD_Lin_TORA','Solver','ode4','FixedStep','h','StopTime','stoptime'
 DT_NL = sim('DT_NL_TORA','Solver','ode4','FixedStep','h','StopTime','stoptime');
 SD_NL = sim('SD_NL_TORA','Solver','ode4','FixedStep','h','StopTime','stoptime');
 
-% %% Plot Results:
+% %% Plot Results: Andrews plot code
 % 
 % %Plot states and estimates over time for both models in one figure:
 % figure
@@ -273,4 +273,3 @@ xlabel('Time(s)')
 ylabel('Velocity')
 title ('State x4: Velocity of Translational oscillator')
 legend('x4 Discrete-Time Model','x4 Sampled-Data Model','location','northeast')
-
