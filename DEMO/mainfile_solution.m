@@ -57,7 +57,7 @@ Bd=sysdzoh.B;
 Cd=sysdzoh.C;
 Dd=sysdzoh.D;
 
-use_approximation = 0;      %turn on/off use of functions matexp intmatexpB
+use_approximation = 1;      %turn on/off use of functions matexp intmatexpB
 
 %Use Approximation Functions
 n = 4; %order of approximation
@@ -72,9 +72,13 @@ end
 test = rank(ctrb(Ad,Bd))==length(Ad); %via rank
 %test = det(ctrb(A,B))~=0; %via determinant (works only with a square matrix)
 % assert(test,strcat('Error System is Not controllable at Point',point))
-
+if(test == 1)
+    fprintf('Equilibrium point Controllable')
+else
+    fprintf('Not controllable ://')
+end
 %Compute Controller gains
-% p = [-3 -4 -5 -6]; %Stable Poles in continuous time s-domain
+%p = [-3 -4 -5 -6]; %Stable Poles in continuous time s-domain
 
 % Pole Placement
 % Required Settling Time
