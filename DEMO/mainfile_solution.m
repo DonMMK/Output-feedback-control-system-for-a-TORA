@@ -57,7 +57,7 @@ Bd=sysdzoh.B;
 Cd=sysdzoh.C;
 Dd=sysdzoh.D;
 
-use_approximation = 1;      %turn on/off use of functions matexp intmatexpB
+use_approximation = 0;      %turn on/off use of functions matexp intmatexpB
 
 %Use Approximation Functions
 n = 4; %order of approximation
@@ -130,7 +130,7 @@ DT_NL = sim('DT_NL_TORA','Solver','ode4','FixedStep','h','StopTime','stoptime');
 SD_NL = sim('SD_NL_TORA','Solver','ode4','FixedStep','h','StopTime','stoptime');
 
 %Sampling Time
-Ts=0.08;
+Ts=0.05;
 stoptime = 10; 
 h = 0.0001;
 %Run simulation of Discrete Time model and Sampled Data model
@@ -286,61 +286,61 @@ ylabel('Velocity')
 title ('State x4: Velocity of Translational oscillator')
 legend('x4 Discrete-Time Model','x4 Sampled-Data Model','location','northeast')
 
-%% Plot 3
-r2d = [180/pi,1]; %Conversions from radians to degrees
-
-
-figure('Name',' SD Linear vs SD Non Linear 1');
-subplot(3,2,1:2)
-plot(SD_Lin.t,SD_Lin.F,'b')
-hold on
-plot(SD_NL.t,SD_NL.F,'r')
-grid on
-xlabel('Time(s)')
-ylabel('Force(N)')
-title ('Control Force')
-legend('F Sampled-Data Model','F Sampled-data NL model')
-
-
-subplot(3,2,3)
-plot(SD_Lin.t,r2d(1)*SD_Lin.x(:,1),'b')
-hold on
-plot(SD_NL.t,r2d(1)*SD_NL.x1(:,1),'r')
-xlabel('Time(s)')
-ylabel('Angle(deg)')
-title ('State x1: Angle of rotating actuator')
-legend('x1 Sampled-Data Model','x1 Sampled-Data NL Model','location','northeast')
-
-
-subplot(3,2,4)
-plot(SD_Lin.t,r2d(1)*SD_Lin.x(:,2),'b')
-hold on
-plot(SD_NL.t,r2d(1)*SD_NL.x2(:,1),'r')
-xlabel('Time(s)')
-ylabel('Angular Velocity(deg/s)')
-title ('State x2: Angular velocity of rotating actuator')
-legend('x2 Sampled-Data Model','x2 Sampled-Data NL Model','location','northeast')
-
-
-subplot(3,2,5)
-plot(SD_Lin.t,r2d(2)*SD_Lin.x(:,3),'b')
-hold on
-plot(SD_NL.t,r2d(2)*SD_NL.x3(:,1),'r')
-xlabel('Time(s)')
-ylabel('Position(m)')
-title ('State x3: Position of Translational oscillator')
-legend('x3 Sampled-Data Model','x3 Sampled-Data NL Model','location','northeast')
-
-subplot(3,2,6)
-plot(SD_Lin.t,r2d(2)*SD_Lin.x(:,4),'b')
-hold on
-plot(SD_NL.t,r2d(2)*SD_NL.x4(:,1),'r')
-xlabel('Time(s)')
-ylabel('Velocity')
-title ('State x4: Velocity of Translational oscillator')
-legend('x4 Sampled-Data Model','x4 Sampled-Data NL Model','location','northeast')
-
-%% Plot 4
+% %% Plot 3
+% r2d = [180/pi,1]; %Conversions from radians to degrees
+% 
+% 
+% figure('Name',' SD Linear vs SD Non Linear 1');
+% subplot(3,2,1:2)
+% plot(SD_Lin.t,SD_Lin.F,'b')
+% hold on
+% plot(SD_NL.t,SD_NL.F,'r')
+% grid on
+% xlabel('Time(s)')
+% ylabel('Force(N)')
+% title ('Control Force')
+% legend('F Sampled-Data Model','F Sampled-data NL model')
+% 
+% 
+% subplot(3,2,3)
+% plot(SD_Lin.t,r2d(1)*SD_Lin.x(:,1),'b')
+% hold on
+% plot(SD_NL.t,r2d(1)*SD_NL.x1(:,1),'r')
+% xlabel('Time(s)')
+% ylabel('Angle(deg)')
+% title ('State x1: Angle of rotating actuator')
+% legend('x1 Sampled-Data Model','x1 Sampled-Data NL Model','location','northeast')
+% 
+% 
+% subplot(3,2,4)
+% plot(SD_Lin.t,r2d(1)*SD_Lin.x(:,2),'b')
+% hold on
+% plot(SD_NL.t,r2d(1)*SD_NL.x2(:,1),'r')
+% xlabel('Time(s)')
+% ylabel('Angular Velocity(deg/s)')
+% title ('State x2: Angular velocity of rotating actuator')
+% legend('x2 Sampled-Data Model','x2 Sampled-Data NL Model','location','northeast')
+% 
+% 
+% subplot(3,2,5)
+% plot(SD_Lin.t,r2d(2)*SD_Lin.x(:,3),'b')
+% hold on
+% plot(SD_NL.t,r2d(2)*SD_NL.x3(:,1),'r')
+% xlabel('Time(s)')
+% ylabel('Position(m)')
+% title ('State x3: Position of Translational oscillator')
+% legend('x3 Sampled-Data Model','x3 Sampled-Data NL Model','location','northeast')
+% 
+% subplot(3,2,6)
+% plot(SD_Lin.t,r2d(2)*SD_Lin.x(:,4),'b')
+% hold on
+% plot(SD_NL.t,r2d(2)*SD_NL.x4(:,1),'r')
+% xlabel('Time(s)')
+% ylabel('Velocity')
+% title ('State x4: Velocity of Translational oscillator')
+% legend('x4 Sampled-Data Model','x4 Sampled-Data NL Model','location','northeast')
+% 
+% %% Plot 4
 r2d = [180/pi,1]; %Conversions from radians to degrees
 
 

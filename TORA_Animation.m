@@ -143,8 +143,8 @@ end
 
 %% Create AVI file.
 
-vidObj = VideoWriter('Cart_Pendulum_Animation NL.avi');      % Create a video object
-vidObj.FrameRate = 200;                                    % Set frames per second in video object
+vidObj = VideoWriter('Cart_Pendulum_Animation Lin.avi');      % Create a video object
+vidObj.FrameRate = 20;                                    % Set frames per second in video object
 open(vidObj);                                             % Open video object
 writeVideo(vidObj,mov);                                   % Write the frames mov in video object
 close(vidObj)                                             % Close video object

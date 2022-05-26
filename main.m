@@ -245,7 +245,7 @@ stateEstimates = 1;
 NL_Hard_3 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
 Lin_Hard_3 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
 
-%% Simulation 7: Starting Conditions varied to test controller capabilities (3)
+%% Simulation 7: Starting Conditions varied to test controller capabilities (4)
 % Add noise
 x0 = [10*pi/180 0 0.1 0]';
 Boolean_Flag_for_Controller = 1;
@@ -254,7 +254,7 @@ Addnoise = 1;
 NL_Hard_4 = sim('TORA_Non_Linear', 'Solver','ode4','FixedStep','h','StopTime','stop_time');
 Lin_Hard_4 = sim('TORA_Linear','Solver','ode4','FixedStep','h','StopTime','stop_time' );
 
-%% Simulation X: Starting Conditions varied to test controller capabilities (4)
+%% Simulation X: Starting Conditions varied to test controller capabilities (5)
 % Distance changed extreme
 %x0 = [10*pi/180 0 +1 0]';
 %Boolean_Flag_for_Controller = 1;
@@ -736,5 +736,5 @@ legend('x4 Linear','x4 hat Linear','x4 Non-Linear','x4 hat Non-Linear','location
 
 %% To animations
 %(time vector, x1, x2, equilibrium x1, equilibrium x2)
-TORA_Animation(NL.t,NL.x(:,1),NL.x(:,2),x_bar(1),x_bar(2)) 
+%TORA_Animation(NL.t,NL.x(:,1),NL.x(:,2),x_bar(1),x_bar(2)) 
 %TORA_Animation(Lin.t,Lin.x(:,1),Lin.x(:,2),x_bar(1),x_bar(2)) 
