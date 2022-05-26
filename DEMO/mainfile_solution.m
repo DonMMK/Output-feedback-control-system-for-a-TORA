@@ -109,7 +109,7 @@ p = [Poles_1_2(1) ,Poles_1_2(2), Pole_3, Pole_4];
 
 p_z = exp(p*Ts);   %Map to Poles in discrete time z-domain
 Kd = place(Ad,Bd,p_z);
-Kd(3) = -0.9223; % 
+% Kd(3) = -0.9223; % 
 
 %% Simulation Parameters
 stoptime = 4;               %Run simulation in seconds
