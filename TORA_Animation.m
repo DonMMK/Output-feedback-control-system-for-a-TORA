@@ -60,8 +60,8 @@ hold on;
 
 xplane = [xp2plane xp1plane];
 yplane = [yp1plane yp1plane];
-%area(xplane,yplane,'basevalue',-hc,'facecolor',[0.5 .5 0.5]);
-rectangle('Position', xplane)
+area(xplane,yplane,'basevalue',-hc,'facecolor',[0.5 .5 0.5]);
+%rectangle('Position', xplane)
 
 %% Initial position of the cart and pendulum
 
@@ -143,7 +143,7 @@ end
 
 %% Create AVI file.
 
-vidObj = VideoWriter('Cart_Pendulum_Animation.avi');      % Create a video object
+vidObj = VideoWriter('Cart_Pendulum_Animation NL.avi');      % Create a video object
 vidObj.FrameRate = 200;                                    % Set frames per second in video object
 open(vidObj);                                             % Open video object
 writeVideo(vidObj,mov);                                   % Write the frames mov in video object
